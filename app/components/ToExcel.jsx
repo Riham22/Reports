@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import * as XLSX from "xlsx";
+import dynamic from "next/dynamic";
+
+// Dynamically import XLSX with no server-side rendering
+const XLSX = dynamic(() => import("xlsx"), { ssr: false });
 
 export default function ExportDataToExcel({ dataType }) {
   const [data, setData] = useState([]);
@@ -36,6 +39,11 @@ export default function ExportDataToExcel({ dataType }) {
   }, [dataType]);
 
   const handleExportExcel = () => {
+    if (!Array.isArray(data) || data.length === 0) {
+      console.error("No valid data to export");
+      return;
+    }
+
     const worksheet = XLSX.utils.json_to_sheet(data);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, `${dataType} Data`);

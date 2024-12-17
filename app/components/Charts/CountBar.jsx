@@ -1,6 +1,7 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
-import { Bar } from "react-chartjs-2";
+
+import React, { useState, useEffect, useRef } from "react";
+import dynamic from "next/dynamic";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -10,8 +11,8 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import html2pdf from "html2pdf.js";
 
+// Dynamically import the chart component to avoid SSR issues
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -21,32 +22,67 @@ ChartJS.register(
   Legend
 );
 
+// Dynamically import the Bar chart from react-chartjs-2
+const BarChart = dynamic(
+  () => import("react-chartjs-2").then((mod) => mod.Bar),
+  { ssr: false }
+);
+
 const DataChart = () => {
   const [data, setData] = useState([]);
-  const chartRef = useRef(null); // Reference to the chart component
+  const chartRef = useRef(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch("/api/dashboard"); // API for aggregated data
-      const result = await response.json();
-      setData(result);
+      try {
+        const response = await fetch("/api/dashboard");
+        if (!response.ok) throw new Error("Failed to fetch data");
+        const result = await response.json();
+        setData(result);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     };
 
     fetchData();
   }, []);
 
-  // Chart data
+  // Initialize html2pdf only on the client-side
+  const exportToPNG = () => {
+    if (typeof window !== "undefined" && chartRef.current) {
+      const chart = chartRef.current;
+      const image = chart.toBase64Image();
+      const link = document.createElement("a");
+      link.href = image;
+      link.download = "chart.png";
+      link.click();
+    }
+  };
+
+  const exportToPDF = () => {
+    if (typeof window !== "undefined" && chartRef.current) {
+      const canvas = chartRef.current.canvas;
+      const pdfElement = document.createElement("div");
+      pdfElement.appendChild(canvas);
+
+      // Only use html2pdf if it is loaded in the client
+      import("html2pdf.js").then((html2pdf) => {
+        html2pdf().from(pdfElement).save("chart.pdf");
+      });
+    }
+  };
+
   const chartData = {
-    labels: ["الشركات", "الضباط", "مراكز الخدمة", "المستشارين", "المقاولين"], // X-axis: categories
+    labels: ["الشركات", "الضباط", "مراكز الخدمة", "المستشارين", "المقاولين"],
     datasets: [
       {
         label: "الأعداد",
         data: [
-          data.serviceProvidersCount, // Number of companies
-          data.fieldOfficersCount, // Number of officers
-          data.serviceCentersCount, // Number of service centers
-          data.consultantsCount, // Number of consultants
-          data.contractorsCount, // Number of contractors
+          data.serviceProvidersCount,
+          data.fieldOfficersCount,
+          data.serviceCentersCount,
+          data.consultantsCount,
+          data.contractorsCount,
         ],
         backgroundColor: "rgba(54, 162, 235, 0.6)",
       },
@@ -58,56 +94,25 @@ const DataChart = () => {
       x: {
         ticks: {
           color: "white",
-          font: {
-            size: 16,
-            family: "Arial, sans-serif",
-            weight: "bold",
-          },
+          font: { size: 16, family: "Arial, sans-serif", weight: "bold" },
         },
-        grid: {
-          color: "rgba(255, 255, 255, 0.3)",
-        },
+        grid: { color: "rgba(255, 255, 255, 0.3)" },
       },
       y: {
         ticks: {
           color: "white",
-          font: {
-            size: 16,
-            family: "Arial, sans-serif",
-            weight: "bold",
-          },
+          font: { size: 16, family: "Arial, sans-serif", weight: "bold" },
         },
-        grid: {
-          color: "rgba(255, 255, 255, 0.3)",
-        },
+        grid: { color: "rgba(255, 255, 255, 0.3)" },
       },
     },
     responsive: true,
     maintainAspectRatio: false,
   };
 
-  // Function to export chart to PNG
-  const exportToPNG = () => {
-    const chart = chartRef.current;
-    const image = chart.toBase64Image(); // Get chart as a base64 image
-    const link = document.createElement("a");
-    link.href = image;
-    link.download = "chart.png"; // Set file name
-    link.click();
-  };
-
-  // Function to export chart to PDF
-  const exportToPDF = () => {
-    const chart = chartRef.current;
-    const canvas = chart.canvas;
-
-    // Create a temporary HTML element to generate the PDF from
-    const pdfElement = document.createElement("div");
-    pdfElement.appendChild(canvas);
-
-    // Use html2pdf.js to generate PDF
-    html2pdf().from(pdfElement).save("chart.pdf");
-  };
+  if (typeof window === "undefined") {
+    return null; // Don't render on the server
+  }
 
   return (
     <div className="bg-black bg-opacity-70 p-10 rounded-lg">
@@ -126,12 +131,16 @@ const DataChart = () => {
           Export as PDF
         </button>
       </div>
-
       <div
         className="chart-container mt-4"
         style={{ height: "60vh", width: "60%" }}
       >
-        <Bar ref={chartRef} data={chartData} options={options} id="dataChart" />
+        <BarChart
+          ref={chartRef}
+          data={chartData}
+          options={options}
+          id="dataChart"
+        />
       </div>
     </div>
   );

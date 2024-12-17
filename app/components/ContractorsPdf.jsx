@@ -1,7 +1,14 @@
-import html2pdf from "html2pdf.js";
-
+// import html2pdf from "html2pdf.js";
+"use client";
 const ExportContractorsToPDF = ({ tableData }) => {
+  const [html2pdf, setHtml2pdf] = useState(null);
+
+  useEffect(() => {
+    import("html2pdf.js").then((module) => setHtml2pdf(module.default));
+  }, []);
+
   const handleExportPDF = () => {
+    if (!html2pdf) return;
     const element = document.getElementById("contractor-table");
     const options = {
       margin: [5, 5],

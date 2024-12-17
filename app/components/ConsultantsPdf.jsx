@@ -1,7 +1,16 @@
-import html2pdf from "html2pdf.js";
+// import html2pdf from "html2pdf.js";
+"use client";
+import { useEffect, useState } from "react";
 
 const ExportConsultantsToPDF = ({ tableData }) => {
+  const [html2pdf, setHtml2pdf] = useState(null);
+
+  useEffect(() => {
+    import("html2pdf.js").then((module) => setHtml2pdf(module.default));
+  }, []);
+
   const handleExportPDF = () => {
+    if (!html2pdf) return;
     const element = document.getElementById("consultants-table");
     const options = {
       margin: 5,

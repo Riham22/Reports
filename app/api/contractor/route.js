@@ -1,39 +1,53 @@
-import { PrismaClient } from '@prisma/client';
 import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 export async function POST(request) {
     const body = await request.json();
 
+    // Validate required fields
+    const requiredFields = [
+        'businessName',
+        'commercialNumber',
+        'contractorName',
+        'nationalId',
+        'mobile',
+        'companyAddress',
+        'electricianName',
+        'electricianId',
+        'electricianMobile',
+    ];
 
-    if (!body.businessName || !body.commercialNumber || !body.contractorName || !body.mobile || !body.companyAddress || !body.electricianName || !body.electricianId || !body.electricianMobile) {
-        return NextResponse.json(
-            { error: "Business name, commercial number, responsible name, mobile, and company address are required" },
-            { status: 400 }
-        );
+    for (const field of requiredFields) {
+        if (!body[field]) {
+            return NextResponse.json(
+                { error: `${field} is required` },
+                { status: 400 }
+            );
+        }
     }
 
     try {
-        const contractor = await prisma.Contractor.create({
+        const newContractor = await prisma.Contractor.create({
             data: {
                 businessName: body.businessName,
                 commercialNumber: body.commercialNumber,
                 contractorName: body.contractorName,
-                nationalId: body.nationalId || "",
+                nationalId: body.nationalId,
                 mobile: body.mobile,
                 companyAddress: body.companyAddress,
-                electricianName: body.electricianName || "",
-                electricianId: body.electricianId || "",
-                electricianMobile: body.electricianMobile || "",
+                electricianName: body.electricianName,
+                electricianId: body.electricianId,
+                electricianMobile: body.electricianMobile,
             },
         });
 
-        return NextResponse.json(contractor, { status: 201 });
+        return NextResponse.json(newContractor, { status: 201 }); // Created
     } catch (error) {
-        console.error(error);
+        console.error('Error creating Contractor:', error);
         return NextResponse.json(
-            { error: "Failed to create the contractor" },
+            { error: 'Failed to create Contractor. ' + error.message },
             { status: 500 }
         );
     } finally {

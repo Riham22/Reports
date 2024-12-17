@@ -1,15 +1,23 @@
+"use client";
+
 import React from "react";
-import FieldOfficers from "./FieldOfficers";
-import ServiceProviders from "./ServiceProviders";
-import ServiceCenters from "./ServiceCenters";
-import Consultants from "./Consultants";
-import Surveys from "./Survey";
-import Contractors from "./Contractor";
-import DataChart from "../Charts/CountBar";
+import dynamic from "next/dynamic";
+const FieldOfficers = dynamic(() => import("./FieldOfficers"), { ssr: false });
+const ServiceProviders = dynamic(() => import("./ServiceProviders"), {
+  ssr: false,
+});
+const DataChart = dynamic(() => import("../Charts/CountBar"), { ssr: false });
+
+const ServiceCenters = dynamic(() => import("./ServiceCenters"), {
+  ssr: false,
+});
+const Consultants = dynamic(() => import("./Consultants"), { ssr: false });
+const Surveys = dynamic(() => import("./Survey"), { ssr: false });
+const Contractors = dynamic(() => import("./Contractor"), { ssr: false });
 
 const Reports = () => {
   return (
-    <div className=" mx-auto my-10">
+    <div className="mx-auto my-10">
       <FieldOfficers />
       <ServiceProviders />
       <Consultants />

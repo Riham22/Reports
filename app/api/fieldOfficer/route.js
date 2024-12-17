@@ -6,14 +6,28 @@ const prisma = new PrismaClient();
 export async function POST(request) {
     const body = await request.json();
 
-    if (!body.name || !body.rank || !body.phoneNumber || !body.regionNumber || !body.centerNumber || !body.networkNumber) {
-        return NextResponse.json(
-            { error: "All fields are required" },
-            { status: 400 }
-        );
+    // Validate required fields
+    const requiredFields = [
+        'name',
+        'rank',
+        'phoneNumber',
+        'regionNumber',
+        'centerNumber',
+        'networkNumber',
+    ];
+
+    // Check if all required fields are provided
+    for (const field of requiredFields) {
+        if (!body[field]) {
+            return NextResponse.json(
+                { error: `${field} is required` },
+                { status: 400 }
+            );
+        }
     }
 
     try {
+        // Create new field officer in the database
         const newFieldOfficer = await prisma.FieldOfficer.create({
             data: {
                 name: body.name,

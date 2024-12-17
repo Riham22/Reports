@@ -1,7 +1,16 @@
-import html2pdf from "html2pdf.js";
+"use client";
+// import html2pdf from "html2pdf.js";
+import { useEffect, useState } from "react";
 
 const ExportServiceCentersToPDF = ({ tableData }) => {
+  const [html2pdf, setHtml2pdf] = useState(null);
+
+  useEffect(() => {
+    import("html2pdf.js").then((module) => setHtml2pdf(module.default));
+  }, []);
   const handleExportPDF = () => {
+    if (!html2pdf) return;
+
     const element = document.getElementById("service-center-table");
     const options = {
       margin: [5, 5],

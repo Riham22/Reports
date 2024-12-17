@@ -1,29 +1,34 @@
-import { PrismaClient } from '@prisma/client';
 import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 export async function POST(request) {
     const body = await request.json();
 
+    // Validate required fields
+    const requiredFields = [
+        'companyName',
+        'licenseNumber',
+        'responsibleName',
+        'responsibleMobile',
+        'mResponsibleName',
+        'mResponsibleMobile',
+        'aResponsibleName',
+        'aResponsibleMobile',
+    ];
 
-    if (!body.companyName ||
-        !body.licenseNumber ||
-        !body.responsibleName ||
-        !body.responsibleMobile ||
-        !body.mResponsibleName ||
-        !body.mResponsibleMobile ||
-        !body.aResponsibleName ||
-        !body.aResponsibleMobile
-    ) {
-        return NextResponse.json(
-            { error: "All fields are required" },
-            { status: 400 }
-        );
+    for (const field of requiredFields) {
+        if (!body[field]) {
+            return NextResponse.json(
+                { error: `${field} is required` },
+                { status: 400 }
+            );
+        }
     }
 
     try {
-        const serviceProvider = await prisma.ServiceProvider.create({
+        const newServiceProvider = await prisma.ServiceProvider.create({
             data: {
                 companyName: body.companyName,
                 licenseNumber: body.licenseNumber,
@@ -36,11 +41,11 @@ export async function POST(request) {
             },
         });
 
-        return NextResponse.json(serviceProvider, { status: 201 });
+        return NextResponse.json(newServiceProvider, { status: 201 }); // Created
     } catch (error) {
-        console.error(error);
+        console.error('Error creating Service Provider:', error);
         return NextResponse.json(
-            { error: "Failed to create the service provider" },
+            { error: 'Failed to create Service Provider. ' + error.message },
             { status: 500 }
         );
     } finally {

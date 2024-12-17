@@ -13,6 +13,7 @@
     "axios": "^1.7.7",
     "chart.js": "^4.4.7",
     "critters": "^0.0.25",
+    "formidable": "^3.5.2",
     "html2pdf": "^0.0.11",
     "html2pdf.js": "^0.10.2",
     "json2csv": "^6.0.0-alpha.2",
@@ -24,9 +25,9 @@
     "react": "^18.3.1",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.3.1",
-    "react-html-table-to-excel": "^2.0.0",
     "xlsx": "^0.18.5"
   },
+  "type": "module",
   "devDependencies": {
     "@prisma/client": "^6.0.1",
     "postcss": "^8",
