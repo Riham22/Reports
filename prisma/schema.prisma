@@ -1,0 +1,123 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model FieldOfficer {
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  rank          String
+  phoneNumber   String
+  regionNumber  String
+  centerNumber  String
+  networkNumber String
+}
+
+model ServiceProvider {
+  id                 String @id @default(auto()) @map("_id") @db.ObjectId
+  companyName        String
+  licenseNumber      String
+  responsibleName    String
+  responsibleMobile  String
+  mResponsibleName   String
+  mResponsibleMobile String
+  aResponsibleName   String
+  aResponsibleMobile String
+}
+
+model Consultant {
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  companyName   String
+  licenseNumber String
+
+  responsibleName          String
+  responsibleNationalId    String
+  responsibleMobile        String
+  responsibleCenterAddress String
+
+  mResponsibleName          String
+  mResponsibleNationalId    String
+  mResponsibleMobile        String
+  mResponsibleCenterAddress String
+
+  aResponsibleName          String
+  aResponsibleNationalId    String
+  aResponsibleMobile        String
+  aResponsibleCenterAddress String
+}
+
+model Contractor {
+  id                String @id @default(auto()) @map("_id") @db.ObjectId
+  businessName      String
+  commercialNumber  String
+  contractorName    String
+  nationalId        String
+  mobile            String
+  companyAddress    String
+  electricianName   String
+  electricianId     String
+  electricianMobile String
+}
+
+model ServiceCenter {
+  id                  String @id @default(auto()) @map("_id") @db.ObjectId
+  companyName         String
+  serviceCenterNumber String
+  nationality         String
+  count               String
+  headName            String
+  headId              String
+  headMobile          String
+  headTradeNumber     String
+  viceName            String
+  viceNationalId      String
+  viceMobile          String
+  viceLocation        String
+  arHeadName          String
+  arHeadId            String
+  arHeadMobile        String
+  arHeadLocation      String
+  minaHeadName        String
+  minaHeadId          String
+  minaHeadMobile      String
+  minaHeadLocation    String
+}
+
+model SurveyOfficerResponsibility {
+  id                       String @id @default(auto()) @map("_id") @db.ObjectId
+  companyName              String
+  serviceCenterNumber      String
+  nationality              String
+  count                    String
+  location                 String
+  serviceHeadName          String
+  generalResponsibleName   String
+  officerName              String
+  officerCenterNumber      String
+  officerNetworkNumber     String
+  north                    String
+  south                    String
+  west                     String
+  east                     String
+  northExitsCount          String
+  southExitsCount          String
+  westExitCount            String
+  eastExitCount            String
+  extinguisherCount        String
+  powderExtinguisherCount  String
+  dioxideExtinguisherCount String
+  extinCheckComp           String
+  extinCheckCompNumber     String
+  additions                String
+}
+
+model Commitment {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  description String
+  file        String?
+  isChecked   Boolean @default(false)
+}
