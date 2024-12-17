@@ -1,9 +1,8 @@
-import ClientComponent from "./components/CLientComponent";
+import ExportDashboard from "./components/ExportDashboard";
 
 export default function Home() {
   return (
     <div>
-      <ClientComponent />
-    </div>
+      <ExportDashboard />    </div>
   );
 }

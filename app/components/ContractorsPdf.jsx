@@ -1,5 +1,8 @@
 // import html2pdf from "html2pdf.js";
 "use client";
+
+import { useEffect, useState } from "react";
+
 const ExportContractorsToPDF = ({ tableData }) => {
   const [html2pdf, setHtml2pdf] = useState(null);
 

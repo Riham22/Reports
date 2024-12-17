@@ -9,7 +9,7 @@ export default {
         // Fix for ES module resolution in some environments
         config.resolve = {
             ...config.resolve,
-            extensions: [".js", ".jsx", ".ts", ".tsx"], // Ensure support for these file types
+            extensions: [".js", ".jsx", ".ts", ".tsx", ".mjs"], // Ensure support for these file types
         };
 
         return config;
